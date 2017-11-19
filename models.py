@@ -6,29 +6,28 @@ from flask import request, redirect, url_for, globals, Response
 
 class BuildStage(flask2mongo.Document):
     stage_order = flask2mongo.IntegerField()
-    temperature = flask2mongo.FloatField()
 
     identifier_key = 'stage_order'
 
     @staticmethod
     def query_devices(stage_order):
-        return {'build_stage': stage_order.stage_order}
+        return {'build_stage': int(stage_order)}
 
     @staticmethod
-    def get_air_conditioners(stage_order):
-        return stage_order.query(stage_order.query_devices(), collection=AirConditioning.collection)
+    def get_air_conditioners(stage_order, jsoned=False):
+        return BuildStage.query(BuildStage.query_devices(stage_order), collection=AirConditioning.__class__.__name__.lower(), jsoned=jsoned)
 
     @staticmethod
-    def get_thermometers(stage_order):
-        return stage_order.query(stage_order.query_devices(), collection=Thermometer.collection)
+    def get_thermometers(stage_order, jsoned=False):
+        return BuildStage.query(BuildStage.query_devices(stage_order), collection=Thermometer.__class__.__name__.lower(), jsoned=jsoned)
 
     @staticmethod
-    def get_bulbs(stage_order):
-        return stage_order.query(stage_order.query_devices(), collection=Bulb.collection)
+    def get_bulbs(stage_order, jsoned=False):
+        return BuildStage.query(BuildStage.query_devices(stage_order), collection=Bulb.__class__.__name__.lower(), jsoned=jsoned)
 
     @staticmethod
-    def get_electronic_closure(stage_order):
-        return stage_order.query(stage_order.query_devices(), collection=ElectronicClosure.collection)
+    def get_electronic_closure(stage_order, jsoned=False):
+        return BuildStage.query(BuildStage.query_devices(stage_order), collection=ElectronicClosure.__class__.__name__.lower(), jsoned=jsoned)
 
 
 class Device(flask2mongo.Document):
@@ -36,22 +35,28 @@ class Device(flask2mongo.Document):
     stage_order = flask2mongo.IntegerField()
 
     identifier_key = 'device_id'
+    hybrid = True
 
     def get_state(self):
         pass
 
     def set_state(self, value):
         pass
+
+    def save(self, collection=None):
+        if not BuildStage.query({'stage_order': self.stage_order.value}):
+            raise Exception("This stage doesn't exist")
+        super(Device, self).save(collection=collection)
 
 
 class AirConditioning(Device):
     air_temperature = flask2mongo.IntegerField()
 
     def get_state(self):
-        return self.air_temperature
+        return self.air_temperature.value
 
     def set_state(self, value):
-        self.air_temperature = value
+        self.air_temperature.value = value
 
 
 class Thermometer(Device):

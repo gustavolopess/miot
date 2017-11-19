@@ -1,7 +1,6 @@
 import binascii
 import os
 import re
-
 from jose import jwt
 from werkzeug.security import generate_password_hash
 from flask2mongo.base import Document
@@ -42,11 +41,20 @@ class StringField(Field):
 class IntegerField(Field):
     @property
     def value(self):
-        return self._value
+        return int(self._value)
 
     @value.setter
     def value(self, value):
         self._value = int(value)
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return self.value
+
+    def __unicode__(self):
+        return self.value
 
 
 class FloatField(Field):
@@ -77,7 +85,8 @@ class EmailField(Field):
 class ApiKeyField(Field):
     def __init__(self):
         super(ApiKeyField, self).__init__(fillable=False)
-        self.value = str(binascii.hexlify(os.urandom(16)).decode('utf8'))
+        print(str(binascii.hexlify(os.urandom(24)).decode('utf8')))
+        self.value = str(binascii.hexlify(os.urandom(24)).decode('utf8'))
 
 
 class ApiSecretField(Field):

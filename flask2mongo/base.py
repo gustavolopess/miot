@@ -38,6 +38,7 @@ class Document(object):
 
         # fields which starts with __ or are instance of Field and are not fillable must be ignored for now
         significant_fields = []
+        print(cls)
         for k in cls.__dict__:
             if str(k).startswith('__'): continue
             if isinstance(cls.__dict__[k], flask2mongo.Field) and not cls.__dict__[k].fillable: continue
@@ -54,71 +55,55 @@ class Document(object):
 
         obj = super(Document, cls).__new__(cls)  # create a pre-instance of this class
 
-        # The __collection__ attribute determines the mongo collection where the doc referred to this object
-        # will be placed.
-        # If the attribute collection is passed on kwargs, the value will be the name of child class
-        # in lowercase.
-        obj.__collection__ = cls.__name__.lower() if 'collection' not in kwargs else kwargs.pop('collection')
 
         for k, v in doc.items():
             if statically_typed and cls.__dict__.get(k):
-                print(k)
-                typed_field = cls.__dict__[k]  # get the typed field on child class with same name of doc field
-                if isinstance(v, dict) and inspect.isclass(typed_field):
-                    instanced_field = typed_field(**v)
-                    setattr(obj, k, instanced_field)
-                elif inspect.isclass(typed_field) and isinstance(v, typed_field):
-                    setattr(obj, k, v)
-                else:
-                    typed_field.value = v  # instance this field with value equal to the passed on args
-                    setattr(obj, k,  typed_field)  # set this attribute to fresh-instanced object
-            else:  # non-static docs
-                f = flask2mongo.Field()   # set a generic field to receive the value
-                f.value = str(v)
+                typed_v = cls.__dict__[k]
+                typed_v.value = v
+                setattr(obj, k,  typed_v)
+            else:
+                f = flask2mongo.Field()
+                f.value = v
                 setattr(obj, k, f)
 
         #  re-check if all fields declared on child class were properly filled (in case of non-static and hybrid docs)
-        for k, v in cls.__dict__.items():
-            if isinstance(cls.__dict__[k], flask2mongo.Field):
-                if not cls.__dict__[k].fillable:
-                    setattr(obj, k, v)
+        for k, v in inspect.getmembers(cls):
+            attr = getattr(cls, k)
+            if isinstance(attr, flask2mongo.Field) and not cls.__dict__.get(k):
+                if not attr.fillable:
+                    val = attr.__class__()
+                    setattr(obj, k, val)
                 elif k not in doc:
-                    print(k, 'not in', doc)
-                    raise Exception('Missing field')
+                    raise Exception('Missing field {}'.format(k))
 
         obj.statically_typed = statically_typed
         return obj
 
-    @property
-    def collection(self):
-        return self.__collection__
 
-    @classmethod
-    def jsonify(cls, doc=None):
-        doc = cls.__dict__ if not doc else doc
+    def jsonify(self):
+        doc_iter = self.__dict__
         rdoc = dict({})
-        for k, v in doc.items():
-            if not str(k).startswith('__') and isinstance(v, flask2mongo.Field):
+        for k, v in doc_iter.items():
+            if not str(k).startswith('__') and isinstance(v, flask2mongo.Field) and v:
                 rdoc[k] = v.value
         return rdoc
 
     def save(self, collection=None):
-        if not collection:
-            collection = self.collection
+        _id = ''
+        collection = self.__class__.__name__.lower() if not collection else collection
         if self.identifier_key:
             if not self.unique_keys:
                 self.unique_keys.append(self.identifier_key)
             elif self.identifier_key not in self.unique_keys:
                 raise Exception('Identifier key must be one of unique_keys')
-            _id = ''
             for k in self.unique_keys:
-                print(self.__dict__)
-                _id += str(self.__dict__[k])
+                _id += '{}'.format(self.__dict__[k])
             if _id:
-                id_field = flask2mongo.StringField()
-                id_field.value = _id
-                self.__dict__['_id'] = id_field
-        MONGO_DB[collection].insert_one(Document.jsonify(doc=self.__dict__))
+                self.__dict__['_id'] = _id
+        mongo_doc = self.jsonify()
+        if _id:
+            mongo_doc['_id'] = _id
+        MONGO_DB[collection].insert_one(mongo_doc)
 
     @classmethod
     def all(cls, collection=None):
@@ -127,14 +112,15 @@ class Document(object):
         return list(documents)
 
     @classmethod
-    def query(cls, *query_infs, collection=None):
+    def query(cls, *query_infs, collection=None, jsoned=False):
         collection = cls.__name__.lower() if not collection else collection
         documents = MONGO_DB[collection].find(*query_infs)
-        return list(cls.__new__(d) for d in documents)
+        if jsoned: return list(documents)
+        return list(cls(d) for d in documents)
 
     @classmethod
     def update(cls, update_doc, query_dict, collection=None):
-        if not collection: collection = cls.collection
+        if not collection: collection = cls.__name__.lower()
         for k, v in update_doc.items():
             MONGO_DB[collection].update(
                 query_dict,
@@ -147,10 +133,6 @@ class Document(object):
         if '_id' in self.__dict__:
             return self.__dict__['_id'].__str__()
 
-    @property
-    def object_collection(self):
-        if self.collection:
-            return self.collection
 
     @object_id.setter
     def object_id(self, value):
