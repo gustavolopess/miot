@@ -3,7 +3,7 @@ middleware for IOT devices based on RESTful web API
 
 ## To use this project
 
-* Configuration
+1. Configuration of working environment
 ```
 	$ sudo apt-get install python3 python-pip
 	$ sudo pip install virtualenv virtualenvwrapper
@@ -14,14 +14,12 @@ middleware for IOT devices based on RESTful web API
 	$ source ~/.bashrc
 	$ mkvirtualenv redes_proj (or anything else you want)
 ```
-* Dependencies
-
+2. Dependencies Installation
 ```
 	CLONE PROJECT FROM GIT
 	$ pip install -r requirements.txt
 ```
-
-* Run Project
+3. Run Project
 ```
-	$ python3 miot.py
+$ python3 miot.py
 ```
