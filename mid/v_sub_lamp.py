@@ -2,7 +2,7 @@ import time
 import zmq
 import paho.mqtt.client as mqtt
 
-broker_addr = "localhost" # address of thermometer broker 
+broker_addr = "localhost" # address of lamp broker
 broker_port = 1883 # port of broker
 
 def on_connect(client, obj, flags, rc):
@@ -22,10 +22,10 @@ sender = context.socket(zmq.PUSH)
 sender.bind("tcp://*:5559")
 
 # Connect and subs. to broker
-client = mqtt.Client("v_sub_thermometer")
+client = mqtt.Client("v_sub_lamp")
 client.on_message = on_message
 client.on_connect = on_connect
 client.on_subscribe = on_subscribe
 client.connect(broker_addr, broker_port, 60)
-client.subscribe("drivers/termometer", 0)
+client.subscribe("drivers/smart_lamp", 0)
 client.loop_forever()    

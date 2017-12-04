@@ -1,6 +1,12 @@
 from flask import Blueprint, request, abort, jsonify, session, redirect, url_for, escape, render_template, flash, Response
 import models
 import traceback
+import zmq
+
+# # Socket to send messages to v_pubs
+# context = zmq.Context()
+# sender = context.socket(zmq.PUSH)
+# servers = {'thermometer': 'localhost:5558', 'air': '', 'closure': '', 'bulb': ''}
 
 blue_print = Blueprint('controllers_devices', __name__, template_folder='templates')
 devices = {
@@ -11,9 +17,12 @@ devices = {
 }
 
 
-@blue_print.route('/api/device/register/<device>/', methods=['POST'])
+@blue_print.route('/api/device/register/<device>/', methods=['GET', 'POST'])
 def register_device(device):
+    return "entrei"
     try:
+        if request.method == 'GET':
+            print "Olar"
         if not request.json:
             abort(400)
         new_device = devices[device](request.json)
@@ -29,6 +38,12 @@ def device_state(device, device_id):
         dvc_cls = devices.get(device)
         dvc_obj = dvc_cls.query({'device_id': device_id})[0]
         if request.method == 'POST':
+            # s: device_id+">"+str(temperature)
+            # s = "olar"
+            # sender.connect("tcp://" + servers[split_string[0]])
+            # sender.send(split_string[1])
+            # sender.send(s)
+            # print "Sending task to workers " + s
             dvc_obj.set_state(request.json.get('value'))
         else:
             return jsonify({'state': dvc_obj.get_state()})

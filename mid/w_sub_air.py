@@ -3,11 +3,11 @@ import zmq
 # import requests
 
 context = zmq.Context()
-v_sub_thermometer = "localhost:5559" # address:port of v_sub_thermometer
+v_sub_air = "localhost:5559" # address:port of v_sub_air
 
-# Socket to receive messages from v_sub_thermometer
+# Socket to receive messages from v_sub_air
 receiver = context.socket(zmq.PULL)
-receiver.connect("tcp://%s" %v_sub_thermometer)
+receiver.connect("tcp://%s" %v_sub_air)
 
 while True:
     s = receiver.recv()
