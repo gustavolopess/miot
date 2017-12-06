@@ -9,7 +9,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     print(msg.payload.decode())
-    client.publish("commands/air_conditioner/3", str(15))
+    client.publish("commands/air_conditioner/0", str(15))
 
 
 client = mqtt.Client()

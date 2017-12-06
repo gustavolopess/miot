@@ -17,6 +17,7 @@ def air_conditioner(device_id):
     def on_message(client, userdata, msg):
         nonlocal objective
         objective = int(msg.payload.decode())
+        print(objective)
 
 
     client = mqtt.Client()
