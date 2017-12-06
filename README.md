@@ -30,6 +30,7 @@ $ python3 miot.py
 ```
 	$ sudo apt-get install mosquitto
 	$ sudo apt-get install mosquitto-clients
+	$ sudo apt-get install python3-zmq
 ```
 2. Run Project 
 ```
