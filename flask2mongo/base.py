@@ -2,6 +2,7 @@ import pymongo
 from flask2mongo import settings
 import flask2mongo
 import inspect
+import datetime
 
 
 MONGO_CONN = pymongo.MongoClient(settings.mongo['MONGO_HOST'], settings.mongo['MONGO_PORT'])
@@ -55,7 +56,6 @@ class Document(object):
 
         obj = super(Document, cls).__new__(cls)  # create a pre-instance of this class
 
-
         for k, v in doc.items():
             if statically_typed and cls.__dict__.get(k):
                 typed_v = cls.__dict__[k]
@@ -65,6 +65,10 @@ class Document(object):
                 f = flask2mongo.Field()
                 f.value = v
                 setattr(obj, k, f)
+
+        field_date = flask2mongo.Field()
+        field_date.value = datetime.datetime.utcnow()
+        setattr(obj, 'created_at', field_date)
 
         #  re-check if all fields declared on child class were properly filled (in case of non-static and hybrid docs)
         for k, v in inspect.getmembers(cls):
@@ -94,7 +98,7 @@ class Document(object):
         if self.identifier_key:
             if not self.unique_keys:
                 self.unique_keys.append(self.identifier_key)
-            elif self.identifier_key not in self.unique_keys:
+            if self.identifier_key not in self.unique_keys:
                 raise Exception('Identifier key must be one of unique_keys')
             for k in self.unique_keys:
                 _id += '{}'.format(self.__dict__[k])
