@@ -4,35 +4,35 @@ from werkzeug.security import check_password_hash
 from flask import request, redirect, url_for, globals, Response
 
 
-class BuildStage(flask2mongo.Document):
-    stage_order = flask2mongo.IntegerField()
-
-    identifier_key = 'stage_order'
-
-    @staticmethod
-    def query_devices(stage_order):
-        return {'build_stage': int(stage_order)}
-
-    @staticmethod
-    def get_air_conditioners(stage_order, jsoned=False):
-        return BuildStage.query(BuildStage.query_devices(stage_order), collection=AirConditioning.__class__.__name__.lower(), jsoned=jsoned)
-
-    @staticmethod
-    def get_thermometers(stage_order, jsoned=False):
-        return BuildStage.query(BuildStage.query_devices(stage_order), collection=Thermometer.__class__.__name__.lower(), jsoned=jsoned)
-
-    @staticmethod
-    def get_bulbs(stage_order, jsoned=False):
-        return BuildStage.query(BuildStage.query_devices(stage_order), collection=Bulb.__class__.__name__.lower(), jsoned=jsoned)
-
-    @staticmethod
-    def get_electronic_closure(stage_order, jsoned=False):
-        return BuildStage.query(BuildStage.query_devices(stage_order), collection=ElectronicClosure.__class__.__name__.lower(), jsoned=jsoned)
+# class BuildStage(flask2mongo.Document):
+#     stage_order = flask2mongo.IntegerField()
+#
+#     identifier_key = 'stage_order'
+#
+#     @staticmethod
+#     def query_devices(stage_order):
+#         return {'build_stage': int(stage_order)}
+#
+#     @staticmethod
+#     def get_air_conditioners(stage_order, jsoned=False):
+#         return BuildStage.query(BuildStage.query_devices(stage_order), collection=AirConditioning.__class__.__name__.lower(), jsoned=jsoned)
+#
+#     @staticmethod
+#     def get_thermometers(stage_order, jsoned=False):
+#         return BuildStage.query(BuildStage.query_devices(stage_order), collection=Thermometer.__class__.__name__.lower(), jsoned=jsoned)
+#
+#     @staticmethod
+#     def get_bulbs(stage_order, jsoned=False):
+#         return BuildStage.query(BuildStage.query_devices(stage_order), collection=Bulb.__class__.__name__.lower(), jsoned=jsoned)
+#
+#     @staticmethod
+#     def get_electronic_closure(stage_order, jsoned=False):
+#         return BuildStage.query(BuildStage.query_devices(stage_order), collection=ElectronicClosure.__class__.__name__.lower(), jsoned=jsoned)
 
 
 class Device(flask2mongo.Document):
-    device_id = flask2mongo.ApiKeyField()
-    stage_order = flask2mongo.IntegerField()
+    device_id = flask2mongo.IntegerField()
+    # stage_order = flask2mongo.IntegerField()
 
     identifier_key = 'device_id'
     hybrid = True
@@ -43,14 +43,14 @@ class Device(flask2mongo.Document):
     def set_state(self, value):
         pass
 
-    def save(self, collection=None):
-        if not BuildStage.query({'stage_order': self.stage_order.value}):
-            raise Exception("This stage doesn't exist")
-        super(Device, self).save(collection=collection)
+    # def save(self, collection=None):
+    #     if not BuildStage.query({'stage_order': self.stage_order.value}):
+    #         raise Exception("This stage doesn't exist")
+    #     super(Device, self).save(collection=collection)
 
 
 class AirConditioning(Device):
-    air_temperature = flask2mongo.IntegerField()
+    air_temperature = flask2mongo.FloatField()
 
     def get_state(self):
         return self.air_temperature.value
@@ -60,20 +60,21 @@ class AirConditioning(Device):
 
 
 class Thermometer(Device):
+    temperature = flask2mongo.FloatField()
 
-    @property
-    def temperature(self):
-        air_conditioners = BuildStage.get_air_conditioners(self.stage_order.value)
-        total_temp = 0.0
-        for ac in air_conditioners:
-            total_temp += ac.air_temperature
-        return total_temp / float(len(air_conditioners))
+    # @property
+    # def temperature(self):
+    #     air_conditioners = BuildStage.get_air_conditioners(self.stage_order.value)
+    #     total_temp = 0.0
+    #     for ac in air_conditioners:
+    #         total_temp += ac.air_temperature
+    #     return total_temp / float(len(air_conditioners))
 
     def get_state(self):
-        return self.temperature
+        return self.temperature.value
 
     def set_state(self, value):
-        raise Exception('Thermometers cannot be seted')
+        self.temperature.value = value
 
 
 class Bulb(Device):
@@ -83,7 +84,7 @@ class Bulb(Device):
         self.turned_on = not self.turned_on
 
     def get_state(self):
-        return 'On' if self.turned_on else 'Off'
+        return 'Off' if self.turned_on else 'On'
 
     def set_state(self, value):
         if value:
@@ -99,7 +100,7 @@ class ElectronicClosure(Device):
         self.closed = not self.closed
 
     def get_state(self):
-        return self.closed
+        return 'Closed' if self.closed else 'Open'
 
     def set_state(self, value):
         if value:

@@ -15,4 +15,4 @@ while True:
 	# this must be on post service on rest
 	# s: device_id+">"+str(temperature)
     sender.send(s)
-    print "Sending task to workers " + s
+    print("Sending task to " + s) 

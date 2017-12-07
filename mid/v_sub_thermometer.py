@@ -9,7 +9,7 @@ def on_connect(client, obj, flags, rc):
 	print("rc: " + str(rc))
 
 def on_message(client, obj, msg): #on_message(client, userdata, message)
-	print("Sending task to workers " + msg.topic + " " + str(msg.payload))
+	# print("Sending task to workers " + msg.topic + " " + str(msg.payload))
 	msg = str(msg.topic + "/" + str(msg.payload))
 	sender.send(msg)
 
@@ -19,7 +19,7 @@ def on_subscribe(client, obj, mid, granted_qos):
 # Socket to send messages to workers
 context = zmq.Context()
 sender = context.socket(zmq.PUSH)
-sender.bind("tcp://*:5559")
+sender.bind("tcp://*:5556")
 
 # Connect and subs. to broker
 client = mqtt.Client("v_sub_thermometer")
