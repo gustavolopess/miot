@@ -3,10 +3,10 @@ import models
 import traceback
 import zmq
 
-# # Socket to send messages to v_pubs
-# context = zmq.Context()
-# sender = context.socket(zmq.PUSH)
-# servers = {'thermometer': 'localhost:5558', 'air': '', 'closure': '', 'bulb': ''}
+# Socket to send messages to w_pub
+context = zmq.Context()
+sender = context.socket(zmq.PUSH)
+sender.bind("tcp://*:5555")
 
 blue_print = Blueprint('controllers_devices', __name__, template_folder='templates')
 devices = {
@@ -15,7 +15,6 @@ devices = {
     'closure': models.ElectronicClosure,
     'bulb': models.Bulb
 }
-
 
 @blue_print.route('/api/device/register/<device>/', methods=['POST'])
 def register_device(device):
@@ -35,13 +34,9 @@ def device_state(device, device_id):
         dvc_cls = devices.get(device)
         dvc_obj = dvc_cls.query({'device_id': device_id})[0]
         if request.method == 'POST':
-            # s: device_id+">"+str(temperature)
-            # s = "olar"
-            # sender.connect("tcp://" + servers[split_string[0]])
-            # sender.send(split_string[1])
-            # sender.send(s)
-            # print "Sending task to workers " + s
-            dvc_obj.set_state(request.json.get('value'))
+            msg = str(device+"/"+device_id+"/"+str(request.json.get('value')))
+            sender.send_string(msg)
+            return Response("Enviado.")
         else:
             return jsonify({'state': dvc_obj.get_state()})
     except Exception as e:

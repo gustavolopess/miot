@@ -7,7 +7,7 @@ middleware for IOT devices based on RESTful web API
 1. Configuration of working environment
 ```
 	$ sudo apt-get install python3 python-pip
-	$ sudo pip install virtualenv virtualenvwrapper
+	$ sudo pip3 install virtualenv virtualenvwrapper
 		Se estiver usando Pip3:
 		echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc
 	$ echo "export WORKON_HOME=~/Env" >> ~/.bashrc
@@ -22,6 +22,7 @@ middleware for IOT devices based on RESTful web API
 ```
 3. Run Project
 ```
+$ sudo mongod 
 $ python3 miot.py
 ```
 
@@ -31,15 +32,13 @@ $ python3 miot.py
 	$ sudo apt-get install mosquitto
 	$ sudo apt-get install mosquitto-clients
 	$ sudo apt-get install python3-zmq
-	$ sudo pip install paho-mqtt
+	$ sudo pip3 install paho-mqtt
 ```
 2. Run Project 
 ```
 	$ mosquitto_sub -t '#'
-	Other terminal: 
-	$ python w_sub_xxx
-	Other terminal:
-	$ python v_sub_xxx
-	Other terminal:
-	Run Vinicius's code.
+	Other terminal: $ python3 w_sub_xxx.py
+	Other terminal: $ python3 w_pub.py
+	Other terminal: $ python3 v_sub_xxx.py
+	Other terminal: Run Vinicius's code.
 ```

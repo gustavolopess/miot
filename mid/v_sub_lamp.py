@@ -11,7 +11,7 @@ def on_connect(client, obj, flags, rc):
 def on_message(client, obj, msg): #on_message(client, userdata, message)
 	# print("Sending task to workers " + msg.topic + " " + str(msg.payload))
 	msg = str(msg.topic + "/" + str(msg.payload))
-	sender.send(msg)
+	sender.send_string(msg)
 
 def on_subscribe(client, obj, mid, granted_qos):
 	print("Subscribed on broker: " + str(mid) + " " + str(granted_qos))
