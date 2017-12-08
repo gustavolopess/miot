@@ -17,7 +17,7 @@ devices = {
 }
 
 
-@blue_print.route('/api/device/register/<device>/', methods=['GET', 'POST'])
+@blue_print.route('/api/device/register/<device>/', methods=['POST'])
 def register_device(device):
     try:
         if not request.json:

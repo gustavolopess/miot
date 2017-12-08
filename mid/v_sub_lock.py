@@ -9,7 +9,7 @@ def on_connect(client, obj, flags, rc):
 	print("rc: " + str(rc))
 
 def on_message(client, obj, msg): #on_message(client, userdata, message)
-	print("Sending task to workers " + msg.topic + " " + str(msg.payload))
+	# print("Sending task to workers " + msg.topic + " " + str(msg.payload))
 	msg = str(msg.topic + "/" + str(msg.payload))
 	sender.send(msg)
 

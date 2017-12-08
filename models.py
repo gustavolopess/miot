@@ -84,7 +84,7 @@ class Bulb(Device):
         self.turned_on = not self.turned_on
 
     def get_state(self):
-        return 'On' if self.turned_on else 'Off'
+        return 'Off' if self.turned_on else 'On'
 
     def set_state(self, value):
         if value:
@@ -100,7 +100,7 @@ class ElectronicClosure(Device):
         self.closed = not self.closed
 
     def get_state(self):
-        return self.closed
+        return 'Closed' if self.closed else 'Open'
 
     def set_state(self, value):
         if value:

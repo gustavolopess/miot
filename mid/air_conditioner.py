@@ -39,7 +39,7 @@ def air_conditioner(device_id):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-s","--size", type=int,
-                        help="how many device instances to create", default=1)
+                        help="how many device instances to create", default=10)
     args = parser.parse_args()
 
     for device_id in range(args.size):
