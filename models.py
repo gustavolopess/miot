@@ -74,7 +74,7 @@ class Thermometer(Device):
         return self.temperature.value
 
     def set_state(self, value):
-        self.temperature.value = value
+        self.temperature.value = float(value)
 
 
 class Bulb(Device):

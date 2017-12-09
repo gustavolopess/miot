@@ -34,9 +34,12 @@ def device_state(device, device_id):
         dvc_cls = devices.get(device)
         dvc_obj = dvc_cls.query({'device_id': int(device_id)})[0]
         if request.method == 'POST':
-            msg = str(device+"/"+device_id+"/"+str(request.json.get('value')))
+            value = request.json.get('value')
+            msg = str(device+"/"+device_id+"/"+str(value))
             sender.send_string(msg)
-            return Response("Enviado.")
+            dvc_obj.set_state(value)
+            dvc_cls.update(dvc_obj.jsonify(), {'device_id': dvc_obj.device_id.value})
+            return Response("Enviado. O estado do {} {} é {}".format(dvc_cls.__name__, device_id, value))
         else:
             return jsonify({'state': dvc_obj.get_state()})
     except Exception as e:
