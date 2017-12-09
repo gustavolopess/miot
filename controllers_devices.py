@@ -32,7 +32,7 @@ def register_device(device):
 def device_state(device, device_id):
     try:
         dvc_cls = devices.get(device)
-        dvc_obj = dvc_cls.query({'device_id': device_id})[0]
+        dvc_obj = dvc_cls.query({'device_id': int(device_id)})[0]
         if request.method == 'POST':
             msg = str(device+"/"+device_id+"/"+str(request.json.get('value')))
             sender.send_string(msg)
