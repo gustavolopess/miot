@@ -17,12 +17,34 @@ devices = {
 }
 
 
+value_parser = {
+    'air': 'air_temperature',
+    'thermometer': 'temperature',
+    'closure': 'closed',
+    'bulb': 'turned_on'
+}
+
+
 @blue_print.route('/api/device/register/<device>/', methods=['POST'])
 def register_device(device):
     try:
         if not request.json:
             abort(400)
-        new_device = devices[device](request.json)
+        device_id = request.json.get('device_id')
+        device_cls = devices[device]
+        existent = device_cls.query({'device_id': int(device_id)})
+        value = request.json.get('value')
+        if len(existent) > 0:
+            device_obj = existent[0]
+            value = request.json.get('value')
+            device_obj.set_state(value)
+            device_cls.update(device_obj.jsonify(), {'device_id': device_obj.device_id.value})
+            return Response('Device updated')
+        creation_dict = request.json
+        creation_dict[value_parser[device]] = creation_dict['value']
+        del creation_dict['value']
+        new_device = devices[device](creation_dict)
+        new_device.set_state(value)
         new_device.save()
         return jsonify(new_device.jsonify())
     except Exception as e:
@@ -43,38 +65,3 @@ def device_state(device, device_id):
             return jsonify({'state': dvc_obj.get_state()})
     except Exception as e:
         return Response(str(e) + str(traceback.format_exc()))
-
-
-@blue_print.route('/api/device/change/state/<device>/<device_id>/', methods=['POST'])
-def change_device_state(device, device_id):
-    try:
-        dvc_cls = devices.get(device)
-        dvc_obj = dvc_cls.query({'device_id': int(device_id)})[0]
-        value = request.json.get('value')
-        dvc_obj.set_state(value)
-        dvc_cls.update(dvc_obj.jsonify(), {'device_id': dvc_obj.device_id.value})
-        return Response("Enviado. O estado do {} {} é {}".format(dvc_cls.__name__, device_id, value))
-    except Exception as e:
-        return Response(str(e) + str(traceback.format_exc()))
-
-
-@blue_print.route('/api/devices/<stage>/', methods=['GET'])
-def get_stage_devices(stage):
-    resp = {
-        'air': models.BuildStage.get_air_conditioners(stage, jsoned=True),
-        'thermometer': models.BuildStage.get_thermometers(stage, jsoned=True),
-        'closure': models.BuildStage.get_electronic_closure(stage, jsoned=True),
-        'bulb': models.BuildStage.get_bulbs(stage, jsoned=True)
-    }
-    return jsonify(resp)
-
-
-@blue_print.route('/api/stage/register/<stage>/', methods=['POST'])
-def register_stage(stage):
-    if int(stage) != 1 and not models.BuildStage.query({'stage_order': int(stage)-1}):
-        return Response("The previous stage ({}) doesn't exist. A stage can't be built above nothing.".format(
-            int(stage)-1)
-        )
-    new_stage = models.BuildStage(stage_order=stage)
-    new_stage.save()
-    return jsonify(new_stage.jsonify())

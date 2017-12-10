@@ -4,32 +4,6 @@ from werkzeug.security import check_password_hash
 from flask import request, redirect, url_for, globals, Response
 
 
-# class BuildStage(flask2mongo.Document):
-#     stage_order = flask2mongo.IntegerField()
-#
-#     identifier_key = 'stage_order'
-#
-#     @staticmethod
-#     def query_devices(stage_order):
-#         return {'build_stage': int(stage_order)}
-#
-#     @staticmethod
-#     def get_air_conditioners(stage_order, jsoned=False):
-#         return BuildStage.query(BuildStage.query_devices(stage_order), collection=AirConditioning.__class__.__name__.lower(), jsoned=jsoned)
-#
-#     @staticmethod
-#     def get_thermometers(stage_order, jsoned=False):
-#         return BuildStage.query(BuildStage.query_devices(stage_order), collection=Thermometer.__class__.__name__.lower(), jsoned=jsoned)
-#
-#     @staticmethod
-#     def get_bulbs(stage_order, jsoned=False):
-#         return BuildStage.query(BuildStage.query_devices(stage_order), collection=Bulb.__class__.__name__.lower(), jsoned=jsoned)
-#
-#     @staticmethod
-#     def get_electronic_closure(stage_order, jsoned=False):
-#         return BuildStage.query(BuildStage.query_devices(stage_order), collection=ElectronicClosure.__class__.__name__.lower(), jsoned=jsoned)
-
-
 class Device(flask2mongo.Document):
     device_id = flask2mongo.IntegerField()
     # stage_order = flask2mongo.IntegerField()
@@ -50,7 +24,7 @@ class Device(flask2mongo.Document):
 
 
 class AirConditioning(Device):
-    air_temperature = flask2mongo.FloatField()
+    air_temperature = flask2mongo.FloatField(fillable=False)
 
     def get_state(self):
         return self.air_temperature.value
@@ -60,7 +34,7 @@ class AirConditioning(Device):
 
 
 class Thermometer(Device):
-    temperature = flask2mongo.FloatField()
+    temperature = flask2mongo.FloatField(fillable=False)
 
     # @property
     # def temperature(self):
@@ -78,7 +52,7 @@ class Thermometer(Device):
 
 
 class Bulb(Device):
-    turned_on = flask2mongo.BooleanField()
+    turned_on = flask2mongo.BooleanField(fillable=False)
 
     def flip(self):
         self.turned_on = not self.turned_on
@@ -94,7 +68,7 @@ class Bulb(Device):
 
 
 class ElectronicClosure(Device):
-    closed = flask2mongo.BooleanField()
+    closed = flask2mongo.BooleanField(fillable=False)
 
     def invert(self):
         self.closed = not self.closed

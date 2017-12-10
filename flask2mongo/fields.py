@@ -48,13 +48,13 @@ class IntegerField(Field):
         self._value = int(value)
 
     def __str__(self):
-        return str(self.value)
+        return int(self.value)
 
     def __repr__(self):
-        return self.value
+        return int(self.value)
 
     def __unicode__(self):
-        return self.value
+        return int(self.value)
 
 
 class FloatField(Field):

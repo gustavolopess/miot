@@ -13,9 +13,9 @@ def air_conditioner(device_id):
         print("Connected with result code "+str(rc))
         client.subscribe("commands/air_conditioner/" + device_id)
 
-
     def on_message(client, userdata, msg):
         nonlocal objective
+        print(objective)
         objective = int(msg.payload.decode())
 
     def on_disconnect(client, userdata, rc):

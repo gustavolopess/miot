@@ -16,6 +16,6 @@ while True:
     s = receiver.recv()
     msg = s.decode().split("/")
     aux = msg[2].split(";")
-    dictToSend = {value : aux[1], 'device_id': aux[0]}
+    dictToSend = {'value': bool(aux[1]), 'device_id': int(aux[0])}
     url = str("http://"+rest+"/api/device/register/closure/")
     res = requests.post(url, json=dictToSend)

@@ -20,6 +20,7 @@ def on_publish(client, obj, mid):
     print("mid: " + str(mid))
 
 
+
 # Socket to receive messages from rest
 context = zmq.Context()
 receiver = context.socket(zmq.PULL)
@@ -34,10 +35,11 @@ client.connect(broker_addr, broker_port, 60)
 client.loop_start()
 while True:
     s = receiver.recv()  # receive data from REST
-    print(s)
     msg = s.decode().split('/')
+    print(s, msg[1], msg[2])
     if msg[0] == "air":
-        client.publish("commands/air_conditioner/" + msg[1], msg[2])  # send data to broker
+        print("commands/air_conditioner/" + msg[1])
+        client.publish("commands/air_conditioner/" + str(msg[1]), str(msg[2]))  # send data to broker
     elif msg[0] == "thermometer":
         client.publish("devices/termometer/" + msg[1], msg[2])  # send data to broker
     elif msg[0] == "closure":
