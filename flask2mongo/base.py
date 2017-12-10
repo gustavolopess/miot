@@ -39,7 +39,6 @@ class Document(object):
 
         # fields which starts with __ or are instance of Field and are not fillable must be ignored for now
         significant_fields = []
-        print(cls)
         for k in cls.__dict__:
             if str(k).startswith('__'): continue
             if isinstance(cls.__dict__[k], flask2mongo.Field) and not cls.__dict__[k].fillable: continue
