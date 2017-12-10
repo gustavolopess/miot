@@ -37,11 +37,22 @@ def device_state(device, device_id):
             value = request.json.get('value')
             msg = str(device+"/"+device_id+"/"+str(value))
             sender.send_string(msg)
-            dvc_obj.set_state(value)
-            dvc_cls.update(dvc_obj.jsonify(), {'device_id': dvc_obj.device_id.value})
             return Response("Enviado. O estado do {} {} é {}".format(dvc_cls.__name__, device_id, value))
         else:
             return jsonify({'state': dvc_obj.get_state()})
+    except Exception as e:
+        return Response(str(e) + str(traceback.format_exc()))
+
+
+@blue_print.route('/api/device/change/state/<device>/<device_id>/', methods=['POST'])
+def change_device_state(device, device_id):
+    try:
+        dvc_cls = devices.get(device)
+        dvc_obj = dvc_cls.query({'device_id': int(device_id)})[0]
+        value = request.json.get('value')
+        dvc_obj.set_state(value)
+        dvc_cls.update(dvc_obj.jsonify(), {'device_id': dvc_obj.device_id.value})
+        return Response("Enviado. O estado do {} {} é {}".format(dvc_cls.__name__, device_id, value))
     except Exception as e:
         return Response(str(e) + str(traceback.format_exc()))
 
