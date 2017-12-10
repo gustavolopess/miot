@@ -16,6 +16,7 @@ devices = {
     'bulb': models.Bulb
 }
 
+
 @blue_print.route('/api/device/register/<device>/', methods=['POST'])
 def register_device(device):
     try:
