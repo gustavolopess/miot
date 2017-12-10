@@ -24,7 +24,7 @@ class Device(flask2mongo.Document):
 
 
 class AirConditioning(Device):
-    air_temperature = flask2mongo.FloatField(fillable=False)
+    air_temperature = flask2mongo.FloatField()
 
     def get_state(self):
         return self.air_temperature.value
@@ -34,7 +34,7 @@ class AirConditioning(Device):
 
 
 class Thermometer(Device):
-    temperature = flask2mongo.FloatField(fillable=False)
+    temperature = flask2mongo.FloatField()
 
     # @property
     # def temperature(self):
@@ -52,7 +52,7 @@ class Thermometer(Device):
 
 
 class Bulb(Device):
-    turned_on = flask2mongo.BooleanField(fillable=False)
+    turned_on = flask2mongo.BooleanField()
 
     def flip(self):
         self.turned_on = not self.turned_on
@@ -61,14 +61,15 @@ class Bulb(Device):
         return 'Off' if self.turned_on else 'On'
 
     def set_state(self, value):
+        print("AQUI", value)
         if value:
-            self.turned_on = True
+            self.turned_on.value = True
         else:
-            self.turned_on = False
+            self.turned_on.value = False
 
 
 class ElectronicClosure(Device):
-    closed = flask2mongo.BooleanField(fillable=False)
+    closed = flask2mongo.BooleanField()
 
     def invert(self):
         self.closed = not self.closed
@@ -78,9 +79,9 @@ class ElectronicClosure(Device):
 
     def set_state(self, value):
         if value:
-            self.closed = True
+            self.closed.value = True
         else:
-            self.closed = False
+            self.closed.value = False
 
 
 class SDNAdmin(flask2mongo.Document):

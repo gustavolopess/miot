@@ -16,6 +16,8 @@ while True:
     s = receiver.recv()
     msg = s.decode().split("/")
     aux = msg[2].split("=")
-    dictToSend = {'value': bool(aux[1]), 'device_id': int(aux[0])}
+    if int(aux[1]) == 0: aux1 = False
+    else: aux1 = True
+    dictToSend = {'value': aux1, 'device_id': int(aux[0])}
     url = str("http://"+rest+"/api/device/register/bulb/")
     res = requests.post(url, json=dictToSend)
