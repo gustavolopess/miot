@@ -3,7 +3,6 @@ from time import sleep
 import paho.mqtt.client as mqtt
 import argparse
 
-
 def air_conditioner(device_id):
     objective = 33
     temperature = 33

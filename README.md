@@ -19,6 +19,8 @@ middleware for IOT devices based on RESTful web API
 ```
 	CLONE PROJECT FROM GIT
 	$ pip install -r requirements.txt
+	$ sudo apt install mongodb-server
+	$ sudo service mongo stop
 ```
 3. Run Project
 ```

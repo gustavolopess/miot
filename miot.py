@@ -1,5 +1,6 @@
 from flask import Flask
 import controllers_devices
+from sdn.get_ip import get_ip
 
 app = Flask(__name__)
 app.register_blueprint(controllers_devices.blue_print)
@@ -12,4 +13,4 @@ def hello_world():
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=False,host=get_ip())
