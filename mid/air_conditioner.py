@@ -26,7 +26,7 @@ def air_conditioner(device_id):
     client.on_message = on_message
     client.on_disconnect = on_disconnect
     
-    client.connect("localhost", 1883, 60)
+    client.connect("10.0.0.2", 1883, 60)
     client.loop_start()
 
     while True:
@@ -35,7 +35,8 @@ def air_conditioner(device_id):
             temperature -=1
         elif temperature < objective:
             temperature += 1
-        client.publish("drivers/virtual_air", device_id+"::"+str(temperature))
+        print('my temperature is ' + str(temperature))
+        #client.publish("drivers/virtual_air", device_id+"::"+str(temperature))
 
 
 if __name__ == "__main__":

@@ -48,7 +48,8 @@ def register_device(device):
             return Response('Device updated')
         creation_dict = dict(request.json).copy()
         creation_dict[value_parser[device]] = value
-        del creation_dict['value']
+        print(creation_dict)
+        #del creation_dict['value']
         new_device = devices[device](creation_dict)
         new_device.save()
         return jsonify(new_device.jsonify())

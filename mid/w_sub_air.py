@@ -2,11 +2,11 @@ import sys
 import zmq
 import requests
 
-rest = "127.0.0.1:5000"
+rest = "10.0.0.1:5000"
 value = "air_temperature"
 
 context = zmq.Context()
-v_sub_air = "localhost:5558" # address:port of v_sub_air
+v_sub_air = "10.0.0.5:5558" # address:port of v_sub_air
 
 # Socket to receive messages from v_sub_air
 receiver = context.socket(zmq.PULL)

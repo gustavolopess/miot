@@ -38,9 +38,12 @@ $ python3 miot.py
 ```
 2. Run Project 
 ```
+	$ mosquitto -d 
 	$ mosquitto_sub -t '#'
 	Other terminal: $ python3 w_sub_xxx.py
 	Other terminal: $ python3 w_pub.py
 	Other terminal: $ python3 v_sub_xxx.py
 	Other terminal: Run Vinicius's code.
+
+
 ```

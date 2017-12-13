@@ -2,7 +2,7 @@ import time
 import zmq
 import paho.mqtt.client as mqtt
 
-broker_addr = "10.0.0.5"  # address of air broker
+broker_addr = "10.0.0.2"  # address of air broker
 broker_port = 1883  # port of air broker
 rest_push = "10.0.0.1:5555"
 
