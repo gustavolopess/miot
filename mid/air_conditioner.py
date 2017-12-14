@@ -36,7 +36,7 @@ def air_conditioner(device_id):
         elif temperature < objective:
             temperature += 1
         print('my temperature is ' + str(temperature))
-        #client.publish("drivers/virtual_air", device_id+"::"+str(temperature))
+        client.publish("drivers/virtual_air", device_id+"::"+str(temperature))
 
 
 if __name__ == "__main__":
