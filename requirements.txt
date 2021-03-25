@@ -24,7 +24,7 @@ pycrypto==2.6.1
 pymongo==3.5.1
 python-jose==1.4.0
 pytz==2017.3
-PyYAML==3.12
+PyYAML==5.4
 pyzmq==16.0.3
 repoze.lru==0.7
 requests==2.18.4
