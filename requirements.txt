@@ -34,7 +34,7 @@ ryu==4.20
 six==1.11.0
 stevedore==1.28.0
 tinyrpc==0.6
-urllib3==1.22
+urllib3==1.26.5
 WebOb==1.7.4
 Werkzeug==0.12.2
 wrapt==1.10.11
